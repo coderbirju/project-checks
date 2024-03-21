@@ -90,13 +90,24 @@ runs:
         ${{ github.action_path }}/script/validate/dco
         echo "::endgroup::"
     
-    - name: Install go-licenses and run checks
-      shell: bash
-      # allow list from https://github.com/cncf/foundation/blob/e5db022a0009f4db52b89d9875640cf3137153fe/allowed-third-party-license-policy.md
-      run: |
-       go install github.com/google/go-licenses@v1.6.0
-       go-licenses check --include_tests ./... --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-2-Clause-FreeBSD,BSD-3-Clause,MIT,ISC,Python-2.0,PostgreSQL,X11,Zlib
-      
+    # - name: Install go-licenses and run checks
+    #   shell: bash
+    #   # allow list from https://github.com/cncf/foundation/blob/e5db022a0009f4db52b89d9875640cf3137153fe/allowed-third-party-license-policy.md
+    #   run: |
+    #    go install github.com/google/go-licenses@v1.6.0
+    #    go-licenses check --include_tests src/... --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-2-Clause-FreeBSD,BSD-3-Clause,MIT,ISC,Python-2.0,PostgreSQL,X11,Zlib
+    
+      - name: Install go-licenses
+        run: go install github.com/google/go-licenses@v1.6.0
+      - name: Print working Dir
+        run:  |
+        echo "${{ github.workspace }}"
+        echo "inputs"
+        echo "${{ inputs.working-directory }}"
+      - name: Check licenses
+        # the allow list corresponds to https://github.com/cncf/foundation/blob/e5db022a0009f4db52b89d9875640cf3137153fe/allowed-third-party-license-policy.md
+        run: go-licenses check --include_tests  ${{ github.workspace }}/... --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-2-Clause-FreeBSD,BSD-3-Clause,MIT,ISC,Python-2.0,PostgreSQL,X11,Zlib
+
 
     - name: Validate file headers
       shell: bash
